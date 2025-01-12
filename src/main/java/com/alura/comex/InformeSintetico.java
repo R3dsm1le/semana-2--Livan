@@ -3,6 +3,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class InformeSintetico {
 
@@ -10,25 +11,11 @@ public class InformeSintetico {
     private String montoFormateado;
     private String pedidoMasBaratoFormateado;
     private String pedidoMasCaroFormateado;
-
-
     private int totalDeProductosVendidos ;
-
-
-
-    private int totalDePedidosRealizados ;
-
-
-
+    private AtomicInteger totalDePedidosRealizados ;
     private BigDecimal montoDeVentas ;
-
-
-
     private Pedido pedidoMasBarato ;
     private Pedido pedidoMasCaro ;
-
-
-
     private int totalDeCategorias ;
 
 
@@ -36,7 +23,7 @@ public class InformeSintetico {
 public InformeSintetico(){
 
     this.montoDeVentas = BigDecimal.ZERO;
-
+    this.totalDePedidosRealizados = new AtomicInteger(0);
 }
 
     public String formateoDeMontoDeVentas(){
@@ -62,13 +49,12 @@ public InformeSintetico(){
         return totalDeProductosVendidos;
     }
 
-
-    public int getTotalDePedidosRealizados() {
-        return totalDePedidosRealizados;
+    public void incrementoDePedidosRealizados(){
+    totalDePedidosRealizados.incrementAndGet();
     }
 
-    public void incrementoDePedidosRealizados(){
-  totalDePedidosRealizados = totalDePedidosRealizados + 1;
+    public int getTotalDePedidosRealizados() {
+        return totalDePedidosRealizados.get();
     }
 
     public void incrementoDeCategoriasRealizadas(){
