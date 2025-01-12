@@ -1,12 +1,7 @@
 package com.alura.comex;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URISyntaxException;
-
-import java.text.NumberFormat;
-
 import java.util.*;
 
 public class Main {
@@ -14,16 +9,9 @@ public class Main {
     public static void main(String[] args) throws IOException, URISyntaxException {
         ProcesadorDeCsv procesador = new ProcesadorDeCsv();
         ArrayList<Pedido> pedidos = procesador.DevolverPedido();
-
-
-        int totalDeProductosVendidos = 0;
-        int totalDePedidosRealizados = 0;
-        BigDecimal montoDeVentas = BigDecimal.ZERO;
-        Pedido pedidoMasBarato = null;
-        Pedido pedidoMasCaro = null;
-
+        InformeSintetico informe = new InformeSintetico();
         CategoriasProcesadas categoriasProcesadas = new CategoriasProcesadas();
-        int totalDeCategorias = 0;
+
 
         for (int i = 0; i < pedidos.size(); i++) {
             Pedido pedidoActual = pedidos.get(i);
@@ -32,31 +20,31 @@ public class Main {
                 break;
             }
 
-            if (pedidoMasBarato == null || categoriasProcesadas.isMasBaratoQue(pedidoActual , pedidoMasBarato ) ) {
-                pedidoMasBarato = pedidoActual;
+            if (informe.getPedidoMasBarato() == null || categoriasProcesadas.isMasBaratoQue(pedidoActual , informe.getPedidoMasBarato() ) ) {
+                informe.setPedidoMasBarato(pedidoActual);
             }
 
-            if (pedidoMasCaro == null || categoriasProcesadas.isMasCaroQue(pedidoActual , pedidoMasCaro )) {
-                pedidoMasCaro = pedidoActual;
+            if (informe.getPedidoMasCaro() == null || categoriasProcesadas.isMasCaroQue(pedidoActual , informe.getPedidoMasCaro() )) {
+                informe.setPedidoMasCaro(pedidoActual);
             }
 
-            montoDeVentas = montoDeVentas.add(pedidoActual.getPrecio().multiply(new BigDecimal(pedidoActual.getCantidad())));
-            totalDeProductosVendidos += pedidoActual.getCantidad();
-            totalDePedidosRealizados++;
+            informe.SumarMontosDeVentas(categoriasProcesadas.getValorTotal(pedidoActual));
+            informe.calculoDeTotalDeProductosVendidos(pedidoActual.getCantidad());
+            informe.incrementoDePedidosRealizados();
 
-            if (!categoriasProcesadas.contains(pedidoActual.getCategoria())) {
-              totalDeCategorias++;
-              categoriasProcesadas.add(pedidoActual.getCategoria());
+            if (!categoriasProcesadas.contiene(pedidoActual.getCategoria())) {
+              informe.incrementoDeCategoriasRealizadas();
+              categoriasProcesadas.agregar(pedidoActual.getCategoria());
             }
         }
 
         System.out.println("#### INFORME DE VALORES TOTALES");
-        System.out.printf("- TOTAL DE PEDIDOS REALIZADOS: %s\n", totalDePedidosRealizados);
-        System.out.printf("- TOTAL DE PRODUCTOS VENDIDOS: %s\n", totalDeProductosVendidos);
-        System.out.printf("- TOTAL DE CATEGORIAS: %s\n", totalDeCategorias);
-        System.out.printf("- MONTO DE VENTAS: %s\n", NumberFormat.getCurrencyInstance(new Locale("es", "PA")).format(montoDeVentas.setScale(2, RoundingMode.HALF_DOWN))); //Pueden cambiar el Locale a la moneda de su pais, siguiendo esta documentación: https://www.oracle.com/java/technologies/javase/java8locales.html
-        System.out.printf("- PEDIDO MAS BARATO: %s (%s)\n", NumberFormat.getCurrencyInstance(new Locale("es", "PA")).format(pedidoMasBarato.getPrecio().multiply(new BigDecimal(pedidoMasBarato.getCantidad())).setScale(2, RoundingMode.HALF_DOWN)), pedidoMasBarato.getProducto());
-        System.out.printf("- PEDIDO MAS CARO: %s (%s)\n", NumberFormat.getCurrencyInstance(new Locale("es", "PA")).format(pedidoMasCaro.getPrecio().multiply(new BigDecimal(pedidoMasCaro.getCantidad())).setScale(2, RoundingMode.HALF_DOWN)), pedidoMasCaro.getProducto());
+        System.out.printf("- TOTAL DE PEDIDOS REALIZADOS: %s\n", informe.getTotalDePedidosRealizados());
+        System.out.printf("- TOTAL DE PRODUCTOS VENDIDOS: %s\n", informe.getTotalDeProductosVendidos());
+        System.out.printf("- TOTAL DE CATEGORIAS: %s\n", informe.getTotalDeCategorias());
+        System.out.printf("- MONTO DE VENTAS: %s\n", informe.formateoDeMontoDeVentas()); //Pueden cambiar el Locale a la moneda de su pais, siguiendo esta documentación: https://www.oracle.com/java/technologies/javase/java8locales.html
+        System.out.printf("- PEDIDO MAS BARATO: %s (%s)\n", informe.formateoDePedidoMasBarato(), informe.getPedidoMasBarato().getProducto());
+        System.out.printf("- PEDIDO MAS CARO: %s (%s)\n", informe.formateoDePedidoMasCaro(), informe.getPedidoMasCaro().getProducto());
     }
 
 

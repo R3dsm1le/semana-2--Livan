@@ -3,12 +3,19 @@ package com.alura.comex;
 import java.math.BigDecimal;
 import java.util.HashSet;
 
-public class CategoriasProcesadas extends HashSet<String> {
+public class CategoriasProcesadas {
+    //se quita el Hashset<String> porque la abstraccion de la clase madre e hija no coinciden
+    BigDecimal valorTotal;
+    HashSet<String> categorias;
 
 
-    public BigDecimal getValorTotal() {
+    public CategoriasProcesadas() {
+       this.categorias = new HashSet<String>();
+    }
 
-        return null;
+    public BigDecimal getValorTotal(Pedido pedido) {
+        valorTotal = pedido.getPrecio().multiply(new BigDecimal(pedido.getCantidad()));
+        return valorTotal;
     }
 
     public boolean isMasBaratoQue(Pedido pedido ,  Pedido pedidobaratoactual) {
@@ -26,5 +33,15 @@ public class CategoriasProcesadas extends HashSet<String> {
             return false;
         }
     }
+
+    public void agregar(String categoria){
+        categorias.add(categoria);
+    }
+
+    public boolean contiene(String categoria){
+        return categorias.contains(categoria);
+    }
+
+
 
 }
