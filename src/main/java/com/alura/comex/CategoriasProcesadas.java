@@ -5,10 +5,11 @@ import java.util.HashSet;
 
 public class CategoriasProcesadas extends HashSet<String> {
 
+    BigDecimal valorTotal;
 
-    public BigDecimal getValorTotal() {
-
-        return null;
+    public BigDecimal getValorTotal(Pedido pedido) {
+        valorTotal = pedido.getPrecio().multiply(new BigDecimal(pedido.getCantidad()));
+        return valorTotal;
     }
 
     public boolean isMasBaratoQue(Pedido pedido ,  Pedido pedidobaratoactual) {
