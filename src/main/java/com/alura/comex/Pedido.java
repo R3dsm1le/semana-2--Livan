@@ -23,6 +23,12 @@ public class Pedido {
         this.fecha = fecha;
     }
 
+
+
+
+
+
+
     public String getCategoria() {
         return categoria;
     }
