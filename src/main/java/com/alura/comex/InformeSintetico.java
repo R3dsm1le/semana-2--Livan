@@ -4,6 +4,7 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BinaryOperator;
 
 public class InformeSintetico {
 
@@ -11,19 +12,22 @@ public class InformeSintetico {
     private String montoFormateado;
     private String pedidoMasBaratoFormateado;
     private String pedidoMasCaroFormateado;
-    private int totalDeProductosVendidos ;
+    private AtomicInteger totalDeProductosVendidos ;
     private AtomicInteger totalDePedidosRealizados ;
     private BigDecimal montoDeVentas ;
     private Pedido pedidoMasBarato ;
     private Pedido pedidoMasCaro ;
-    private int totalDeCategorias ;
-
+    private AtomicInteger totalDeCategorias ;
+    private BinaryOperator<BigDecimal> sumar;
 
 
 public InformeSintetico(){
 
     this.montoDeVentas = BigDecimal.ZERO;
     this.totalDePedidosRealizados = new AtomicInteger(0);
+    this.totalDeProductosVendidos = new AtomicInteger(0);
+    this.totalDeCategorias = new AtomicInteger(0);
+    this.sumar = BigDecimal::add;
 }
 
     public String formateoDeMontoDeVentas(){
@@ -42,11 +46,12 @@ public InformeSintetico(){
     }
 
     public void calculoDeTotalDeProductosVendidos(int cantidad){
-        this.totalDeProductosVendidos = totalDeProductosVendidos + cantidad;
+        this.totalDeProductosVendidos.updateAndGet(actual -> actual + cantidad);
     }
 
+
     public int getTotalDeProductosVendidos() {
-        return totalDeProductosVendidos;
+        return totalDeProductosVendidos.get();
     }
 
     public void incrementoDePedidosRealizados(){
@@ -58,15 +63,15 @@ public InformeSintetico(){
     }
 
     public void incrementoDeCategoriasRealizadas(){
-        totalDeCategorias = totalDeCategorias + 1;
+        totalDeCategorias.incrementAndGet();
     }
 
     public int getTotalDeCategorias() {
-        return totalDeCategorias;
+        return totalDeCategorias.get();
     }
 
     public void SumarMontosDeVentas(BigDecimal monto){
-        this.montoDeVentas = montoDeVentas.add(monto);
+        this.montoDeVentas = sumar.apply(this.montoDeVentas , monto);
     }
 
     public Pedido getPedidoMasBarato() {
