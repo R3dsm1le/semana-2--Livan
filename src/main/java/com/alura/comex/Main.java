@@ -31,11 +31,15 @@ public class Main {
             informe.SumarMontosDeVentas(categoriasProcesadas.getValorTotal(pedidoActual));
             informe.calculoDeTotalDeProductosVendidos(pedidoActual.getCantidad());
             informe.incrementoDePedidosRealizados();
+            informe.setClientesFieles(pedidoActual);
+
 
             if (!categoriasProcesadas.contiene(pedidoActual.getCategoria())) {
               informe.incrementoDeCategoriasRealizadas();
               categoriasProcesadas.agregar(pedidoActual.getCategoria());
             }
+
+
         }
 
         System.out.println("#### INFORME DE VALORES TOTALES");
@@ -45,7 +49,17 @@ public class Main {
         System.out.printf("- MONTO DE VENTAS: %s\n", informe.formateoDeMontoDeVentas()); //Pueden cambiar el Locale a la moneda de su pais, siguiendo esta documentación: https://www.oracle.com/java/technologies/javase/java8locales.html
         System.out.printf("- PEDIDO MAS BARATO: %s (%s)\n", informe.formateoDePedidoMasBarato(), informe.getPedidoMasBarato().getProducto());
         System.out.printf("- PEDIDO MAS CARO: %s (%s)\n", informe.formateoDePedidoMasCaro(), informe.getPedidoMasCaro().getProducto());
+
+        System.out.println("\n#### INFORME DE CLIENTES FIELES");
+        for (Object[] cliente : informe.getClientesFieles()){
+            System.out.println("Cliente:" + cliente[0] +  "\nNro pedidos : " + cliente[1] + "\n");
+        }
+System.out.println("size :" + informe.getClientesFieles().size());
+
     }
+
+
+
 
 
 }

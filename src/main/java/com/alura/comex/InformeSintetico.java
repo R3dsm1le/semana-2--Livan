@@ -1,10 +1,14 @@
 package com.alura.comex;
+import ch.qos.logback.core.joran.sanity.Pair;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
+
 
 public class InformeSintetico {
 
@@ -19,15 +23,15 @@ public class InformeSintetico {
     private Pedido pedidoMasCaro ;
     private AtomicInteger totalDeCategorias ;
     private BinaryOperator<BigDecimal> sumar;
-
+    private List<Object[]> ClientesFieles;
 
 public InformeSintetico(){
-
     this.montoDeVentas = BigDecimal.ZERO;
     this.totalDePedidosRealizados = new AtomicInteger(0);
     this.totalDeProductosVendidos = new AtomicInteger(0);
     this.totalDeCategorias = new AtomicInteger(0);
     this.sumar = BigDecimal::add;
+    this.ClientesFieles = new ArrayList<>();
 }
 
     public String formateoDeMontoDeVentas(){
@@ -91,8 +95,28 @@ public InformeSintetico(){
     }
 
 
+    public void setClientesFieles(Pedido pedido){
+     this.ClientesFieles.add(new Object[]{pedido.getCliente() , pedido.getCantidad()});
 
+    }
 
+    public List<Object[]> getClientesFieles() {
+
+        Set<String> nombresClientes = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        List<Object[]> clientesFielesSinDuplicados = new ArrayList<>();
+
+        for (Object[] cliente : ClientesFieles) {
+            String nombreCliente = (String) cliente[0];
+
+            // Manejo de nulls:  Si el nombre es null, no se considera duplicado
+            if (nombreCliente == null || nombresClientes.add(nombreCliente)) {
+                clientesFielesSinDuplicados.add(cliente);
+            }
+        }
+        Collections.sort(clientesFielesSinDuplicados, Comparator.comparing(o -> (String) o[0], String.CASE_INSENSITIVE_ORDER));
+
+        return clientesFielesSinDuplicados;
+}
 
 
 
