@@ -24,8 +24,13 @@ public class InformeSintetico {
     private AtomicInteger totalDeCategorias ;
     private BinaryOperator<BigDecimal> sumar;
     private List<Object[]> ClientesFieles;
+    private List<Object[]> ventascategorias;
+    private List<Object[]>Tops;
+
 
 public InformeSintetico(){
+    this.Tops = new ArrayList<>();
+    this.ventascategorias = new ArrayList<>();
     this.montoDeVentas = BigDecimal.ZERO;
     this.totalDePedidosRealizados = new AtomicInteger(0);
     this.totalDeProductosVendidos = new AtomicInteger(0);
@@ -117,6 +122,64 @@ public InformeSintetico(){
 
         return clientesFielesSinDuplicados;
 }
+
+
+
+    public void setVentasPorCategoria(Pedido pedido){
+        this.ventascategorias.add(new Object[]{pedido.getCategoria() , pedido.getCantidad() , pedido.getPrecio()});
+    }
+
+
+    public List<Object[]> Getventascategorias(){
+        List<Object[]> resultado = new ArrayList<>();
+
+        Map<String, Object[]> resumen = this.ventascategorias.stream()
+                .collect(Collectors.groupingBy(
+                        obj -> (String) obj[0], // Agrupamos por categoría
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    String categoria = (String) list.get(0)[0];
+                                    int cantidadTotal = list.stream()
+                                            .mapToInt(obj -> (Integer) obj[1])
+                                            .sum();
+                                    BigDecimal precioTotal = list.stream()
+                                            .map(obj -> (BigDecimal) obj[2])
+                                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                    return new Object[]{categoria, cantidadTotal, precioTotal};
+                                }
+                        )
+                ));
+
+        resultado.addAll(resumen.values());
+
+        return resultado;
+
+
+    }
+
+    public void setTopProductos(Pedido pedido){
+    this.Tops.add( new Object[]{pedido.getProducto() , pedido.getCantidad()});
+    }
+
+    public List<Object[]> GetTops(){
+        return this.Tops.stream()
+                // Agrupamos por producto (primer elemento del array) y sumamos cantidades
+                .collect(Collectors.groupingBy(
+                        arr -> arr[0],  // Agrupamos por producto
+                        Collectors.summingInt(arr -> (Integer)arr[1])  // Sumamos cantidades
+                ))
+                // Convertimos el mapa a stream de Object[]
+                .entrySet().stream()
+                // Ordenamos por cantidad (segundo elemento) en orden descendente
+                .sorted((e1, e2) -> ((Integer)e2.getValue()).compareTo((Integer)e1.getValue()))
+                // Tomamos los primeros 3
+                .limit(3)
+                // Convertimos cada entrada a Object[]
+                .map(entry -> new Object[]{entry.getKey(), entry.getValue()})
+                // Recolectamos en una lista
+                .collect(Collectors.toList());
+    }
 
 
 
