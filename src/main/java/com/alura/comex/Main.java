@@ -34,6 +34,7 @@ public class Main {
             informe.incrementoDePedidosRealizados();
             informe.setClientesFieles(pedidoActual);
             informe.setVentasPorCategoria(pedidoActual);
+            informe.setTopProductos(pedidoActual);
 
             if (!categoriasProcesadas.contiene(pedidoActual.getCategoria())) {
               informe.incrementoDeCategoriasRealizadas();
@@ -60,11 +61,23 @@ public class Main {
 System.out.println("size :" + informe.getClientesFieles().size());
 
 
+
         // Para imprimir los resultados
         for (Object[] dato : informe.Getventascategorias()) {
             System.out.printf("\nCATEGORIA: %s, \nCANTIDAD VENDIDA: %d, \nMONTO: %s%n",
                     dato[0], dato[1], ((BigDecimal)dato[2]).toString());
         }
+
+
+
+        System.out.println("\n#### TOP MAS VENDIDO");
+
+
+        for(Object[] resultado : informe.GetTops()) {
+            System.out.println("\nProducto: " + resultado[0] + ", \nCantidad: " + resultado[1]);
+        }
+
+
 
 
     }
