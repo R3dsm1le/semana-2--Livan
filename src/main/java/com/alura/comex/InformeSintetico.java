@@ -24,8 +24,10 @@ public class InformeSintetico {
     private AtomicInteger totalDeCategorias ;
     private BinaryOperator<BigDecimal> sumar;
     private List<Object[]> ClientesFieles;
+    private List<Object[]> ventascategorias;
 
 public InformeSintetico(){
+    this.ventascategorias = new ArrayList<>();
     this.montoDeVentas = BigDecimal.ZERO;
     this.totalDePedidosRealizados = new AtomicInteger(0);
     this.totalDeProductosVendidos = new AtomicInteger(0);
@@ -120,8 +122,38 @@ public InformeSintetico(){
 
 
 
+    public void setVentasPorCategoria(Pedido pedido){
+        this.ventascategorias.add(new Object[]{pedido.getCategoria() , pedido.getCantidad() , pedido.getPrecio()});
+    }
 
 
+    public List<Object[]> Getventascategorias(){
+        List<Object[]> resultado = new ArrayList<>();
+
+        Map<String, Object[]> resumen = this.ventascategorias.stream()
+                .collect(Collectors.groupingBy(
+                        obj -> (String) obj[0], // Agrupamos por categoría
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    String categoria = (String) list.get(0)[0];
+                                    int cantidadTotal = list.stream()
+                                            .mapToInt(obj -> (Integer) obj[1])
+                                            .sum();
+                                    BigDecimal precioTotal = list.stream()
+                                            .map(obj -> (BigDecimal) obj[2])
+                                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                    return new Object[]{categoria, cantidadTotal, precioTotal};
+                                }
+                        )
+                ));
+
+        resultado.addAll(resumen.values());
+
+        return resultado;
+
+
+    }
 
 
 }

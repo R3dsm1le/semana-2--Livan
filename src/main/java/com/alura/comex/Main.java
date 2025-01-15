@@ -1,6 +1,7 @@
 package com.alura.comex;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class Main {
             informe.calculoDeTotalDeProductosVendidos(pedidoActual.getCantidad());
             informe.incrementoDePedidosRealizados();
             informe.setClientesFieles(pedidoActual);
-
+            informe.setVentasPorCategoria(pedidoActual);
 
             if (!categoriasProcesadas.contiene(pedidoActual.getCategoria())) {
               informe.incrementoDeCategoriasRealizadas();
@@ -51,12 +52,24 @@ public class Main {
         System.out.printf("- PEDIDO MAS CARO: %s (%s)\n", informe.formateoDePedidoMasCaro(), informe.getPedidoMasCaro().getProducto());
 
         System.out.println("\n#### INFORME DE CLIENTES FIELES");
+
+
         for (Object[] cliente : informe.getClientesFieles()){
             System.out.println("Cliente:" + cliente[0] +  "\nNro pedidos : " + cliente[1] + "\n");
         }
 System.out.println("size :" + informe.getClientesFieles().size());
 
+
+        // Para imprimir los resultados
+        for (Object[] dato : informe.Getventascategorias()) {
+            System.out.printf("\nCATEGORIA: %s, \nCANTIDAD VENDIDA: %d, \nMONTO: %s%n",
+                    dato[0], dato[1], ((BigDecimal)dato[2]).toString());
+        }
+
+
     }
+
+
 
 
 
