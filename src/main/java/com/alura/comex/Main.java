@@ -35,6 +35,8 @@ public class Main {
             informe.setClientesFieles(pedidoActual);
             informe.setVentasPorCategoria(pedidoActual);
             informe.setTopProductos(pedidoActual);
+            informe.setProductoMasCaro(pedidoActual);
+            informe.SetMasRentables(pedidoActual);
 
             if (!categoriasProcesadas.contiene(pedidoActual.getCategoria())) {
               informe.incrementoDeCategoriasRealizadas();
@@ -79,6 +81,17 @@ System.out.println("size :" + informe.getClientesFieles().size());
 
 
 
+        for (Object[] masCaro : informe.GetMasCaro()){
+
+            System.out.println("\nCategoria: " + masCaro[0] + "\n Producto: " + masCaro[1] +"Precio: " + masCaro[2] );
+
+        }
+
+
+        for (Object[] Moda : informe.GetModa()){
+            System.out.println("\n Cliente:  " + Moda[0] + "\nNro de Pedidos: " + Moda[1] + "\nMonto Gastado: "  + Moda[2]);
+
+        }
 
     }
 

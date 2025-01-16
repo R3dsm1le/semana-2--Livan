@@ -1,6 +1,11 @@
 package com.alura.comex;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -8,46 +13,44 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ProcesadorDeCsv {
 
     public ArrayList<Pedido> DevolverPedido() {
-        ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
-        try {
-            URL recursoCSV = ClassLoader.getSystemResource("pedidos.csv");
-            Path caminoDelArchivo = caminoDelArchivo = Path.of(recursoCSV.toURI());
+        ArrayList<Pedido> pedidos = new ArrayList<>();
 
-            Scanner lectorDeLineas = new Scanner(caminoDelArchivo);
+        try (InputStreamReader inputReader = new InputStreamReader(
+                ClassLoader.getSystemResourceAsStream("pedidos.csv"));
+             CSVReader csvReader = new CSVReaderBuilder(inputReader)
+                     .withSkipLines(1) // Salta la primera línea (encabezados)
+                     .build()) {
 
-            lectorDeLineas.nextLine();
+            List<String[]> registros = csvReader.readAll();
 
-            int cantidadDeRegistros = 0;
-            while (lectorDeLineas.hasNextLine()) {
-                String linea = lectorDeLineas.nextLine();
-                String[] registro = linea.split(",");
-
-                String categoria = registro[0];
-                String producto = registro[1];
-                BigDecimal precio = new BigDecimal(registro[2]);
-                int cantidad = Integer.parseInt(registro[3]);
-                LocalDate fecha = LocalDate.parse(registro[4], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                String cliente = registro[5];
-
-                Pedido pedido = new Pedido(categoria, producto, cliente, precio, cantidad, fecha);
-                pedidos.add(pedido);
-
-                cantidadDeRegistros++;
+            for (String[] registro : registros) {
+                pedidos.add(crearPedido(registro));
             }
-        } catch (
-                URISyntaxException e) {
-            throw new RuntimeException("Archivo pedido.csv no localizado!");
-        } catch (
-                IOException e) {
-            throw new RuntimeException("Error al abrir Scanner para procesar archivo!");
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error al leer el archivo pedidos.csv", e);
+        } catch (CsvException e) {
+            throw new RuntimeException("Error al procesar el archivo CSV", e);
         }
 
         return pedidos;
+    }
+
+    private Pedido crearPedido(String[] registro) {
+        return new Pedido(
+                registro[0],  // categoria
+                registro[1],  // producto
+                registro[5],  // cliente
+                new BigDecimal(registro[2]),  // precio
+                Integer.parseInt(registro[3]),  // cantidad
+                LocalDate.parse(registro[4], DateTimeFormatter.ofPattern("dd/MM/yyyy"))  // fecha
+        );
     }
 
 }
