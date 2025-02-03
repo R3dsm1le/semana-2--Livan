@@ -1,18 +1,15 @@
 package com.alura.comex;
-
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URISyntaxException;
 import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) {
+        ProcesadorDeJson procesadorDeJson = new ProcesadorDeJson();
         ProcesadorDeCsv procesador = new ProcesadorDeCsv();
-        ArrayList<Pedido> pedidos = procesador.DevolverPedido();
         InformeSintetico informe = new InformeSintetico();
         CategoriasProcesadas categoriasProcesadas = new CategoriasProcesadas();
-
+        List<Pedido> pedidos = procesadorDeJson.DevolverPedido();
 
         for (int i = 0; i < pedidos.size(); i++) {
             Pedido pedidoActual = pedidos.get(i);
@@ -29,7 +26,7 @@ public class Main {
                 informe.setPedidoMasCaro(pedidoActual);
             }
 
-            informe.SumarMontosDeVentas(categoriasProcesadas.getValorTotal(pedidoActual));
+            informe.sumarMontos(categoriasProcesadas.getValorTotal(pedidoActual));
             informe.calculoDeTotalDeProductosVendidos(pedidoActual.getCantidad());
             informe.incrementoDePedidosRealizados();
             informe.setClientesFieles(pedidoActual);
@@ -92,6 +89,9 @@ System.out.println("size :" + informe.getClientesFieles().size());
             System.out.println("\n Cliente:  " + Moda[0] + "\nNro de Pedidos: " + Moda[1] + "\nMonto Gastado: "  + Moda[2]);
 
         }
+
+
+
 
     }
 

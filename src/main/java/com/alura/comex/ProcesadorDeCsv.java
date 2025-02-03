@@ -7,16 +7,12 @@ import com.opencsv.exceptions.CsvException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-public class ProcesadorDeCsv {
+public class ProcesadorDeCsv implements ProcesadorStrategy{
 
     public ArrayList<Pedido> DevolverPedido() {
         ArrayList<Pedido> pedidos = new ArrayList<>();
@@ -42,7 +38,9 @@ public class ProcesadorDeCsv {
         return pedidos;
     }
 
-    private Pedido crearPedido(String[] registro) {
+
+
+    public Pedido crearPedido(String[] registro) {
         return new Pedido(
                 registro[0],  // categoria
                 registro[1],  // producto
