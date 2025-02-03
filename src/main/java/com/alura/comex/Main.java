@@ -6,10 +6,11 @@ public class Main {
 
     public static void main(String[] args) {
         ProcesadorDeJson procesadorDeJson = new ProcesadorDeJson();
+        ProcesadorDeXML procesadorDeXML = new ProcesadorDeXML();
         ProcesadorDeCsv procesador = new ProcesadorDeCsv();
         InformeSintetico informe = new InformeSintetico();
         CategoriasProcesadas categoriasProcesadas = new CategoriasProcesadas();
-        List<Pedido> pedidos = procesadorDeJson.DevolverPedido();
+        List<Pedido> pedidos = procesadorDeXML.DevolverPedido();
 
         for (int i = 0; i < pedidos.size(); i++) {
             Pedido pedidoActual = pedidos.get(i);
